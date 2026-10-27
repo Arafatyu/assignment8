@@ -1,0 +1,221 @@
+# docker-compose.yml
+
+# ---------------------------------------------
+# Docker Compose Configuration File
+# ---------------------------------------------
+
+# This Docker Compose file defines and configures the services required to run
+# the FastAPI Calculator application. Docker Compose is a tool that allows you
+# to define and manage multi-container Docker applications using a YAML file.
+
+# Version Specification
+version: '3.8'  # Specify the version of Docker Compose syntax to use.
+
+# Services Definition
+services:
+  # Service: web
+  web:
+    # Build Configuration
+    build: .  # Instructs Docker Compose to build the Docker image using the Dockerfile located in the current directory (denoted by '.').
+    
+    # Container Naming
+    container_name: fastapi_calculator  # Assigns a custom name "fastapi_calculator" to the container. This makes it easier to reference the container in Docker commands.
+    
+    # Port Mapping
+    ports:
+      - "8000:8000"  # Maps port 8000 on the host machine to port 8000 in the Docker container. This allows access to the FastAPI application via localhost:8000 on the host.
+    
+    # Volume Mounting
+    volumes:
+      - .:/app  # Mounts the current directory (host) to the `/app` directory inside the container. This facilitates live updates by reflecting changes made in the host directory within the container without rebuilding the image.
+    
+    # Environment Variables
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1  # Prevents Python from writing `.pyc` files to disk. This ensures that only source code is maintained, keeping the container clean.
+      - PYTHONUNBUFFERED=1  # Forces Python to flush the output buffer immediately. This is useful for real-time logging, ensuring that logs are visible as they are generated.
+    
+    # Command Execution
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload  
+      # Specifies the command to run when the container starts.
+      # - `uvicorn`: An ASGI server for running FastAPI applications.
+      # - `main:app`: Points to the `app` instance in the `main.py` file, which is the FastAPI application.
+      # - `--host 0.0.0.0`: Binds the server to all network interfaces, making it accessible externally.
+      # - `--port 8000`: Sets the port on which the server will listen inside the container.
+      # - `--reload`: Enables automatic reloading of the server when code changes are detected. This is particularly useful during development for immediate feedback without manual restarts.
+
+# ---------------------------------------------
+# Detailed Explanation of Each Component
+# ---------------------------------------------
+
+# 1. Version Specification (`version: '3.8'`)
+#    - Defines the version of the Docker Compose file format to use.
+#    - It's essential to specify the version to ensure compatibility and access to the latest features.
+#    - Version '3.8' is widely supported and includes modern Docker Compose functionalities.
+
+# 2. Services (`services:`)
+#    - The `services` section lists all the containers (services) that make up your application.
+#    - Each service can be thought of as a separate component of your application, such as a web server, database, or cache.
+
+# 3. Service: `web`
+#    - Represents the FastAPI Calculator application.
+#    - Encapsulates all configurations needed to build and run the application inside a Docker container.
+
+#    a. Build Configuration (`build: .`)
+#       - Tells Docker Compose to build the Docker image using the Dockerfile located in the current directory (`.`).
+#       - This process involves reading the instructions in the Dockerfile to set up the application's environment.
+
+#    b. Container Naming (`container_name: fastapi_calculator`)
+#       - Assigns a specific name to the container instead of a randomly generated one.
+#       - Benefits:
+#         - Easier to reference in Docker commands.
+#         - Enhances readability and organization, especially when managing multiple containers.
+
+#    c. Port Mapping (`ports:`)
+#       - Defines how ports on the host machine are forwarded to ports inside the container.
+#       - Format: `"host_port:container_port"`
+#       - Example: `"8000:8000"` maps port 8000 on the host to port 8000 in the container.
+#       - Importance:
+#         - Allows external access to services running inside containers.
+#         - Essential for web applications that need to be accessible via a browser.
+
+#    d. Volume Mounting (`volumes:`)
+#       - Links directories between the host and the container.
+#       - Format: `"host_directory:container_directory"`
+#       - Example: `".:/app"` mounts the current host directory to `/app` inside the container.
+#       - Benefits:
+#         - Enables live code updates without rebuilding the Docker image.
+#         - Facilitates data persistence and sharing between the host and container.
+#       - Use Cases:
+#         - Development environments where code changes need to be reflected immediately.
+#         - Sharing configuration files or assets between the host and container.
+
+#    e. Environment Variables (`environment:`)
+#       - Sets environment variables inside the container.
+#       - Format: `- VARIABLE_NAME=value`
+#       - Example:
+#         - `PYTHONDONTWRITEBYTECODE=1`: Prevents Python from generating `.pyc` files.
+#         - `PYTHONUNBUFFERED=1`: Ensures that Python outputs logs and errors in real-time.
+#       - Benefits:
+#         - Configures the application's behavior without changing the code.
+#         - Enhances security by managing sensitive information through environment variables.
+
+#    f. Command Execution (`command: ...`)
+#       - Overrides the default command specified in the Dockerfile.
+#       - In this case, it runs the FastAPI application using Uvicorn with specific parameters.
+#       - Breakdown:
+#         - `uvicorn main:app`: Launches the FastAPI application defined in `main.py`.
+#         - `--host 0.0.0.0`: Binds the server to all network interfaces, making it accessible externally.
+#         - `--port 8000`: Sets the listening port inside the container.
+#         - `--reload`: Enables automatic server reloads upon code changes, enhancing the development experience.
+
+# ---------------------------------------------
+# Educational Insights
+# ---------------------------------------------
+
+# - **Docker Compose Fundamentals**:
+#   - Docker Compose simplifies the management of multi-container Docker applications.
+#   - By defining services in a YAML file, you can orchestrate the building, running, and networking of containers with ease.
+
+# - **Building Docker Images**:
+#   - The `build` directive automates the image creation process using a Dockerfile.
+#   - Understanding Dockerfile instructions is crucial for customizing the environment in which your application runs.
+
+# - **Container Naming**:
+#   - Assigning meaningful names to containers improves clarity and simplifies container management.
+#   - It aids in monitoring, logging, and inter-container communication.
+
+# - **Port Mapping**:
+#   - Essential for exposing containerized applications to the outside world.
+#   - Allows developers to access services like web servers, databases, and APIs via standardized ports.
+
+# - **Volume Mounting**:
+#   - Bridges the gap between the host and container file systems.
+#   - Facilitates seamless development workflows by reflecting code changes instantly within containers.
+
+# - **Environment Variables**:
+#   - Offers a secure and flexible way to configure applications.
+#   - Encourages the practice of separating configuration from code, enhancing portability and scalability.
+
+# - **Command Execution and Auto-Reload**:
+#   - Running the application with `--reload` is particularly beneficial during development, as it eliminates the need for manual restarts upon code changes.
+#   - Promotes a more efficient development cycle and immediate feedback.
+
+# ---------------------------------------------
+# Best Practices Illustrated
+# ---------------------------------------------
+
+# 1. **Version Pinning**:
+#    - Always specify the Docker Compose version to ensure compatibility and access to desired features.
+#    - Prevents unexpected behavior due to version discrepancies.
+
+# 2. **Descriptive Naming**:
+#    - Use clear and descriptive names for containers (`container_name: fastapi_calculator`) to enhance readability and management.
+#    - Facilitates easier troubleshooting and monitoring.
+
+# 3. **Port Configuration**:
+#    - Map only the necessary ports to minimize security risks.
+#    - Avoid exposing unnecessary services to the host.
+
+# 4. **Volume Management**:
+#    - Use volume mounts judiciously to balance development convenience and container isolation.
+#    - Prevent potential conflicts by ensuring that mounted directories do not overwrite critical container directories.
+
+# 5. **Environment Variables Security**:
+#    - Avoid hardcoding sensitive information directly into the Compose file.
+#    - Utilize `.env` files or Docker secrets for managing sensitive data securely.
+
+# 6. **Efficient Development Workflow**:
+#    - Leverage features like `--reload` to streamline the development process.
+#    - Reduces downtime and accelerates the feedback loop when making code changes.
+
+# ---------------------------------------------
+# Running the Application with Docker Compose
+# ---------------------------------------------
+
+# To build and run the FastAPI Calculator application using Docker Compose, follow these steps:
+
+# 1. **Prerequisites**:
+#    - Ensure that Docker and Docker Compose are installed on your machine.
+#    - Verify the installation by running:
+#      ```bash
+#      docker --version
+#      docker-compose --version
+#      ```
+    
+# 2. **Navigate to the Project Directory**:
+#    - Open your terminal or command prompt.
+#    - Change the current directory to the one containing the `docker-compose.yml` file:
+#      ```bash
+#      cd /path/to/your/project
+#      ```
+    
+# 3. **Build and Start the Containers**:
+#    - Execute the following command to build the Docker images and start the containers as defined in the Compose file:
+#      ```bash
+#      docker-compose up --build
+#      ```
+#    - **Flags**:
+#      - `--build`: Forces a rebuild of the Docker images, ensuring that the latest code and dependencies are included.
+    
+# 4. **Access the Application**:
+#    - Once the containers are up and running, open your web browser and navigate to:
+#      ```
+#      http://localhost:8000
+#      ```
+#    - This will display your FastAPI Calculator application, accessible via the mapped host port 8000.
+    
+# 5. **Stopping the Containers**:
+#    - To stop the running containers, press `Ctrl+C` in the terminal where Docker Compose is running.
+#    - Alternatively, run:
+#      ```bash
+#      docker-compose down
+#      ```
+#    - This command stops and removes the containers, networks, and other resources defined in the Compose file.
+
+# ---------------------------------------------
+# Conclusion
+# ---------------------------------------------
+
+# This `docker-compose.yml` file serves as a foundational example for setting up and managing a Dockerized FastAPI application. By meticulously defining each service and its configurations, it demonstrates how Docker Compose can streamline the deployment and development process. The comprehensive comments and explanations embedded within the file act as a guided learning tool, equipping students with the knowledge to effectively utilize Docker and Docker Compose in their projects. Encouraging students to explore and modify these configurations will deepen their understanding and proficiency in containerization technologies, which are integral to modern software development practices.
+
+# If you have any further questions or need additional assistance with Docker Compose or your application setup, feel free to ask!
