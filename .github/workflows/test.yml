@@ -29,12 +29,11 @@ jobs:
          python -m venv venv
          source venv/bin/activate
          pip install -r requirements.txt
-         playwright install --with-deps chromium
+         playwright install
 
      - name: Run tests
        run: |
          source venv/bin/activate
-         mkdir -p test-results
          pytest tests/unit/ --cov=src --junitxml=test-results/junit.xml
          pytest tests/integration/
          pytest tests/e2e/
